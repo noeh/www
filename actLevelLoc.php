@@ -67,51 +67,55 @@ var arc = d3.svg.arc()
 var pie = d3.layout.pie()
 	.sort(null)
 	.value(function(d){ return d.mon; });
+function changePie() {
+	var psvg = d3.select("#piechart")
+		.attr("width", pwidth)
+		.attr("height", pheight)
+	  	.append("g")
+	  	.attr("transform","translate(" + pwidth / 2 + "," + pheight / 2 + ")")
+	  	;
 
-var psvg = d3.select("#piechart")
-	.attr("width", pwidth)
-	.attr("height", pheight)
-  	.append("g")
-  	.attr("transform","translate(" + pwidth / 2 + "," + pheight / 2 + ")")
-  	;
+	d3.csv("pie.csv", function(error, data) {	
 
-d3.csv("pie.csv", function(error, data) {
+			var g = psvg.selectAll(".arc")
+				.data(pie(data)) // bend data
+			  .enter().append("g")
+			  	.attr("class", "arc");
+			g.append("path")
+				.attr("d", arc)
+				.style("fill", function(d) { return color(d.data.place); });
+		// document.getElementBylassVs
+			var legend = d3.select("#legend")
+				.attr("width", pwidth)
+				.attr("height", pheight);
 
-		var g = psvg.selectAll(".arc")
-			.data(pie(data)) // bend data
-		  .enter().append("g")
-		  	.attr("class", "arc");
-		g.append("path")
-			.attr("d", arc)
-			.style("fill", function(d) { return color(d.data.place); });
-	// document.getElementBylassVs
-		var legend = d3.select("#legend")
-			.attr("width", pwidth)
-			.attr("height", pheight);
+			var legendgroup = legend.append("g");
 
-		var legendgroup = legend.append("g");
+			legendgroup.selectAll("rect")
+				.data(data).enter()
+			  .append("rect")
+				.attr("x", 300)
+				.attr("y", function(d, i) { return i * 20;})
+				.attr("width", 10)
+				.attr("height", 10)
+				.style("fill", function(d) { return color(d.place);});
 
-		legendgroup.selectAll("rect")
-			.data(data).enter()
-		  .append("rect")
-			.attr("x", 300)
-			.attr("y", function(d, i) { return i * 20;})
-			.attr("width", 10)
-			.attr("height", 10)
-			.style("fill", function(d) { return color(d.place);});
+			legendgroup.selectAll("text")
+				.data(data).enter()
+			  .append("text")
+				.text(function(d){return d.place;})
+				.attr("x", 330)
+				.attr("y", function(d, i) { return i * 20;})
+				.attr("dy", ".71em")
+				.attr("text-anchor", "left")
+				.attr("font-family", "sans-serif")
+				.attr("font-size", "12px")
+				.attr("fill", "BLACK");
+	});
 
-		legendgroup.selectAll("text")
-			.data(data).enter()
-		  .append("text")
-			.text(function(d){return d.place;})
-			.attr("x", 330)
-			.attr("y", function(d, i) { return i * 20;})
-			.attr("dy", ".71em")
-			.attr("text-anchor", "left")
-			.attr("font-family", "sans-serif")
-			.attr("font-size", "12px")
-			.attr("fill", "BLACK");
-});
+}
+
+changePie();
 
   var timeout = setTimeout(function() {
     d3.select("input[value=\"oranges\"]").property("checked", true).each(change);
@@ -119,6 +123,7 @@ d3.csv("pie.csv", function(error, data) {
 
 function change() {
 	pie.value(function(d) {return d.tue;});
+	changePie();
 }
 
 
