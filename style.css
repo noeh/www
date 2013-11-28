@@ -1,0 +1,149 @@
+ /* global */
+ html{height: 100%;}
+ 
+ body
+ { /*font-family: verdana, arial, serif;*/
+	font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, sans-serif;
+	padding: 0px;
+	margin: 0px;
+	font-size: 20px;
+ }
+ 
+ h1, h2
+ {
+	 text-align:center;
+ }
+
+ .rect_button
+ {
+ 	width: 100px;
+ 	height: 50px;
+ 	-moz-border-radius: 15px;
+  	-webkit-border-radius: 15px;
+ }
+ .arrow-right {
+	width: 0px;
+	height: 0px;
+	border-style: solid;
+	border-width: 10px 0 10px 20px;
+	border-color: transparent transparent transparent rgba(100, 100, 100, 1);
+	background-color: white;
+}
+.arrow-left {
+	width: 0px;
+	height: 0px;
+	border-style: solid;
+	border-width: 10px 20px 10px 0;
+	border-color: transparent rgba(100, 100, 100, 1) transparent transparent;
+	background-color: white;
+}
+ 
+ .subHeader
+ {
+	 text-align:center;
+ }
+ .dataDate
+ {
+	 padding-top:10px;
+	 padding-bottom:30px;
+ }
+
+ .mainDataView {
+	float: left;
+	border: thin;
+	width: 60%;
+	margin:auto;
+	padding-top: 1px;
+	padding-left: 3px;
+	padding-right: 3px;
+	text-align:center;
+ }
+ .rightPanels {
+	margin: auto;
+	width:35%;
+	float: right;
+	text-align: center;
+ }
+ 
+ .rightPanels ul {
+
+ }
+ .rightPanels ul li{
+	margin: auto 0;	
+	display:list-item;
+	list-style: none;
+	padding-top: 1px;
+	padding-bottom: 5px;
+ }
+ 
+ /* navigation */
+#navigation {
+	background: #AFD5E0 url("bg-nav.gif") repeat-x;
+	border: 1px solid #979797;
+	border-width: 1px 0;
+	font-size: 1.1em;
+	margin-top: .5em;
+	padding-top: .3em;
+}
+
+#navigation ul, #navigation ul li {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+#navigation ul {
+	padding: 5px 0;
+	text-align: center;
+}
+
+#navigation ul li {
+	display: inline;
+	margin-right: .75em;
+}
+
+#navigation ul li.last {
+	margin-right: 0;
+}
+
+#navigation ul li a {
+	background-color:white;
+	color: #06C;
+	padding: 5px 0;
+	text-decoration: none;
+}
+
+#navigation ul li a span {
+	background-color:white;
+	padding: 5px 1em;
+}
+
+#navigation ul li a:hover span {
+	color: white;
+	background-color:#39C;
+}
+
+ /* navigation */
+.chart {
+	width:auto;
+	height:auto;
+	margin:auto 0;
+}
+
+.bar {
+	fill:steelblue;
+}
+
+.axis text {
+	font: 20px sans-serif;	
+}
+
+.axis path, .axis line {
+	fill: none;
+	stroke: #000;
+	shape-rendering: crispEdges;
+}
+
+.x.axis path {
+	display: none;	
+}
