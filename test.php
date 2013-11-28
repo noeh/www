@@ -1,91 +1,101 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<style>
-
-body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  margin: auto;
-  position: relative;
-  width: 960px;
-}
-
-text {
-  font: 10px sans-serif;
-}
-
-form {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-}
-
-input {
-  margin: 0 7px;
-}
-
-</style>
-<form></form>
-<script src="http://d3js.org/d3.v3.min.js"></script>
-<script>
-var width = 960,
-    height = 500,
-    radius = Math.min(width, height) / 2;
-
-var color = d3.scale.category20();
-
-var pie = d3.layout.pie()
-    .value(function(d) { return d.apples; })
-    .sort(null);
-
-var arc = d3.svg.arc()
-    .innerRadius(radius - 100)
-    .outerRadius(radius - 20);
-
-var svg = d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height)
-  .append("g")
-    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-
-d3.tsv("data.tsv", type, function(error, data) {
-  var path = svg.datum(data).selectAll("path")
-      .data(pie)
-    .enter().append("path")
-      .attr("fill", function(d, i) { return color(i); })
-      .attr("d", arc)
-      .each(function(d) { this._current = d; }); // store the initial angles
-
-  d3.selectAll("input")
-      .on("change", change);
-
-  var timeout = setTimeout(function() {
-    d3.select("input[value=\"oranges\"]").property("checked", true).each(change);
-  }, 2000);
-
-  function change() {
-    var value = this.value;
-    clearTimeout(timeout);
-    pie.value(function(d) { return d[value]; }); // change the value function
-    path = path.data(pie); // compute the new angles
-    path.transition().duration(750).attrTween("d", arcTween); // redraw the arcs
-  }
-});
-
-function type(d) {
-  d.apples = +d.apples;
-  d.oranges = +d.oranges;
-  return d;
-}
-
-// Store the displayed angles in _current.
-// Then, interpolate from _current to the new angles.
-// During the transition, _current is updated in-place by d3.interpolate.
-function arcTween(a) {
-  var i = d3.interpolate(this._current, a);
-  this._current = i(0);
-  return function(t) {
-    return arc(i(t));
-  };
-}
-
-</script>
+<style type="text/css">
+.modalWindow {
+        position: fixed;
+        font-family: arial;
+        font-size:80%;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background: rgba(0,0,0,0.2);
+        z-index: 99999;
+        opacity:0;
+        -webkit-transition: opacity 400ms ease-in;
+        -moz-transition: opacity 400ms ease-in;
+        transition: opacity 400ms ease-in;
+        pointer-events: none;
+    }
+    .modalHeader h2 { color: #189CDA; border-bottom: 2px groove #efefef; }
+    .modalWindow:target {
+        opacity:1;
+        pointer-events: auto;
+    }
+    .modalWindow > div {
+        width: 500px;
+        position: relative;
+        margin: 10% auto;
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+        border-radius: 5px;
+        background: #fff;
+    }
+    .modalWindow .modalHeader  {    padding: 5px 20px 0px 20px; }
+    .modalWindow .modalContent {    padding: 0px 20px 5px 20px; }
+    .modalWindow .modalFooter  {    padding: 8px 20px 8px 20px; }
+    .modalFooter {
+        background: #F1F1F1;
+        border-top: 1px solid #999;
+        -moz-box-shadow: inset 0px 13px 12px -14px #888;
+        -webkit-box-shadow: inset 0px 13px 12px -14px #888;
+        box-shadow: inset 0px 13px 12px -14px #888;
+    }
+    .modalFooter p {
+        color:#D4482D;
+        text-align:right;
+        margin:0;
+        padding: 5px;
+    }
+    .ok, .close, .cancel {
+        background: #606061;
+        color: #FFFFFF;
+        line-height: 25px;
+        text-align: center;
+        text-decoration: none;
+        font-weight: bold;
+        -webkit-border-radius: 2px;
+        -moz-border-radius: 2px;
+        border-radius: 2px;
+        -moz-box-shadow: 1px 1px 3px #000;
+        -webkit-box-shadow: 1px 1px 3px #000;
+        box-shadow: 1px 1px 3px #000;
+    }
+    .close {
+        position: absolute;
+        right: 5px;
+        top: 5px;
+        width: 22px;
+        height: 22px;
+        font-size: 10px;
+ 
+    }
+    .ok, .cancel {
+        width:80px;
+        float:right;
+        margin-left:20px;
+    }
+    .ok:hover { background: #189CDA; }
+    .close:hover, .cancel:hover { background: #D4482D; }
+    .clear { float:none; clear: both; }
+    </style>
+    
+    <div id="openModal" class="modalWindow">
+    <div>
+         
+        <div class="modalHeader">
+            <h2>This is a sample modal window</h2>
+            <a href="#close" title="Close" class="close">X</a>
+        </div>
+         
+        <div class="modalContent">
+            <p>This is a sample modal window that can be created using CSS3 and HTML5.</p>
+            <p>Modal windows are used, among many others, to display login/register forms; advertisements; or just notifications to the user. They frequently contain critical information, that user must attend in order to return to the page.</p>
+        </div>
+         
+        <div class="modalFooter">
+            <a href="#cancel" title="Cancel" class="cancel">Cancel</a>
+            <a href="#ok" title="Ok" class="ok">Apply</a>
+            <p>Keep in mind that this is a demo</p>
+            <div class="clear"></div>
+        </div>
+    </div>
+</div>

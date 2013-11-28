@@ -22,7 +22,15 @@
 
 
 <body>
-   <?php require("navigation.php"); ?>
+   <div id="openModal" class="modalWindow">
+	    <div>
+	    	<svg id="modalPie"></svg>
+	        <a href="#ok" title="Ok" class="ok">Ok</a>
+	    </div>
+	</div>
+
+ <?php require("navigation.php"); ?>
+
 	<div class="subHeader"> 
 		<h2> Activity level based on location </h2>
         <div class="dataDate">October</div>
@@ -42,7 +50,7 @@
                 <li>
                 <button class = "rect_button" type="button">Week</button>
                 </li>
-                <li> Data title 
+                <li> Data title <a href="#openModal">View Detail</a>
                 	<svg id = "piechart"></svg>
                 	<svg id = "legend"></svg>
                 </li>
@@ -51,6 +59,48 @@
     </div>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script type="text/javascript">
+
+<!-- modal detail view -->
+
+var mpwidth = 600,
+	mpheight = 300,
+	mpradius = Math.min(mpwidth, mpheight) /2;
+
+var color = d3.scale.category20();
+
+var mparc = d3.svg.arc()
+	.outerRadius(mpradius - 10)
+	.innerRadius((mpradius -10) / 3);
+
+var mpie = d3.layout.pie()
+	.sort(null)
+	.value(function(d){ return 1; });
+
+function showDetailPie() {
+	var psvg = d3.select("#modalPie")
+		.attr("width", mpwidth)
+		.attr("height", mpheight)
+	  	.append("g")
+	  	.attr("transform","translate(" + mpwidth / 2 + "," + mpheight / 2 + ")")
+	  	;
+
+  		d3.csv("pie.csv", function(error, data) {	
+
+			var g = psvg.selectAll(".arc")
+				.data(pie(data)) // bind data
+			  .enter().append("g")	
+			  	.attr("class", "arc")
+			  	;
+
+			g.append("path")
+				.attr("d", arc)
+				.style("fill", function(d) { return color(d.data.place); })
+				;
+		});
+
+
+}
+
 
 <!-- rigt panel data view -->
 
@@ -66,7 +116,8 @@ var arc = d3.svg.arc()
 
 var pie = d3.layout.pie()
 	.sort(null)
-	.value(function(d){ return d.mon; });
+	.value(function(d){ return 1; });
+
 function changePie() {
 	var psvg = d3.select("#piechart")
 		.attr("width", pwidth)
@@ -78,13 +129,33 @@ function changePie() {
 	d3.csv("pie.csv", function(error, data) {	
 
 			var g = psvg.selectAll(".arc")
-				.data(pie(data)) // bend data
-			  .enter().append("g")
+				.data(pie(data)) // bind data
+			  .enter().append("g")	
 			  	.attr("class", "arc");
+	
 			g.append("path")
 				.attr("d", arc)
-				.style("fill", function(d) { return color(d.data.place); });
-		// document.getElementBylassVs
+				.on("mouseover", function(d){ 
+					d3.select(this)
+					.style("stroke", color(d.data.place))
+					.style("stroke-linejoin", "round")
+					.transition()
+					.duration(200)
+					.style("stroke-width", 10)
+					;
+				})
+				.on("mouseout", function(d){ 
+					d3.select(this)
+					.transition()
+					.duration(200)
+					.style("stroke-width", 0)
+					;
+				})
+				.style("fill", function(d) { return color(d.data.place); })
+				.append("svg:title")
+				.text(function(d){return d.data.place;})
+				;
+
 			var legend = d3.select("#legend")
 				.attr("width", pwidth)
 				.attr("height", pheight);
@@ -94,7 +165,7 @@ function changePie() {
 			legendgroup.selectAll("rect")
 				.data(data).enter()
 			  .append("rect")
-				.attr("x", 300)
+				.attr("x", 200)
 				.attr("y", function(d, i) { return i * 20;})
 				.attr("width", 10)
 				.attr("height", 10)
@@ -104,7 +175,7 @@ function changePie() {
 				.data(data).enter()
 			  .append("text")
 				.text(function(d){return d.place;})
-				.attr("x", 330)
+				.attr("x", 220)
 				.attr("y", function(d, i) { return i * 20;})
 				.attr("dy", ".71em")
 				.attr("text-anchor", "left")
@@ -117,17 +188,17 @@ function changePie() {
 
 changePie();
 
-  var timeout = setTimeout(function() {
-    d3.select("input[value=\"oranges\"]").property("checked", true).each(change);
-  }, 2000);
-// changed!!!!
-function change() {
-	pie.value(function(d) {return d.tue;});
+function change(day) {
+	console.log(day);
+	pie.value(function(d) { 
+		return d[day];});
 	changePie();
 }
 
 
 <!-- main data view -->
+var selected = null;
+
 var margin = {top: 20, right: 30, bottom: 30, left:90},
 	width = 1020 - margin.left - margin.right,
 	height = 500 - margin.top - margin.bottom;
@@ -169,7 +240,7 @@ d3.tsv("data.tsv", type, function(error, data) {
 		.attr("dy", "-3.5em")
 		.attr("dx", "-7em")
 		.style("text-anchor", "end")
-		.text("Calories burnt");
+		.text("Activity level");
 	
 	chart.selectAll(".bar")
 		.data(data)
@@ -179,9 +250,25 @@ d3.tsv("data.tsv", type, function(error, data) {
 		.attr("y", function(d) { return y(d.value);})
 		.attr("width", x.rangeBand())
 		.attr("height", function(d) { return height - y(d.value); })
-		.on("mouseover", function(){d3.select(this).style("fill", "orange");})
-		.on("mouseout", function(){d3.select(this).style("fill", "steelblue");})
-		.on("click", function(){change()});
+		.on("mouseover", function(d){
+			if(selected != d.day) {
+				d3.select(this).style("stroke", "skyblue")
+				.style("stroke-width", 10)
+				.style("stroke-linejoin", "round")
+				;
+			}
+		})
+		.on("mouseout", function(d){
+			if(selected != d.day){d3.select(this).style("stroke", "none");}
+			})
+		.on("click", function(d){
+			selected = d.day;
+			d3.selectAll(".bar").style("fill", "steelblue")
+				.style("stroke", "none");
+			d3.select(this).style("fill", "orange");
+
+			change(d.day);
+		});
 });
 console.log("hello world");
 function type(d) {
