@@ -120,7 +120,7 @@ changePie();
   var timeout = setTimeout(function() {
     d3.select("input[value=\"oranges\"]").property("checked", true).each(change);
   }, 2000);
-
+// changed!!!!
 function change() {
 	pie.value(function(d) {return d.tue;});
 	changePie();
